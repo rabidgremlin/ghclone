@@ -146,9 +146,6 @@ func run(args []string) error {
 	if len(args) < 1 {
 		return fmt.Errorf("%s", usage)
 	}
-	if len(args) > 1 {
-		return fmt.Errorf("invalid arguments\n%s", usage)
-	}
 	switch args[0] {
 	case "--help", "-h":
 		fmt.Println(usage)
@@ -156,6 +153,9 @@ func run(args []string) error {
 	case "--version", "-v":
 		fmt.Println(version)
 		return nil
+	}
+	if len(args) > 1 {
+		return fmt.Errorf("invalid arguments\n%s", usage)
 	}
 	repo := args[0]
 	if !strings.Contains(repo, "/") {
