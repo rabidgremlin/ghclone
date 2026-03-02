@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -11,12 +12,40 @@ func TestRunNoArgs(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error when no args provided")
 	}
+	if !strings.Contains(err.Error(), "Usage:") {
+		t.Fatalf("expected usage in error, got: %v", err)
+	}
 }
 
 func TestRunInvalidRepoFormat(t *testing.T) {
 	err := run([]string{"noslash"})
 	if err == nil {
 		t.Fatal("expected error for invalid repo format")
+	}
+	if !strings.Contains(err.Error(), "Usage:") {
+		t.Fatalf("expected usage in error, got: %v", err)
+	}
+}
+
+func TestRunTooManyArgs(t *testing.T) {
+	err := run([]string{"owner/repo", "extra"})
+	if err == nil {
+		t.Fatal("expected error when too many args provided")
+	}
+	if !strings.Contains(err.Error(), "Usage:") {
+		t.Fatalf("expected usage in error, got: %v", err)
+	}
+}
+
+func TestRunHelp(t *testing.T) {
+	if err := run([]string{"--help"}); err != nil {
+		t.Fatalf("expected no error for --help, got: %v", err)
+	}
+}
+
+func TestRunVersion(t *testing.T) {
+	if err := run([]string{"--version"}); err != nil {
+		t.Fatalf("expected no error for --version, got: %v", err)
 	}
 }
 

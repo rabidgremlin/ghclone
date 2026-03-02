@@ -10,6 +10,13 @@ import (
 	"strings"
 )
 
+var version = "dev-build"
+
+const usage = `Usage:
+  ghclone <owner/repo>
+  ghclone --help
+  ghclone --version`
+
 func checkGHAvailable() error {
 	_, err := exec.LookPath("gh")
 	if err != nil {
@@ -137,11 +144,22 @@ func setGitConfig(dir, name, email string) error {
 
 func run(args []string) error {
 	if len(args) < 1 {
-		return fmt.Errorf("usage: ghclone <owner/repo>")
+		return fmt.Errorf("%s", usage)
+	}
+	switch args[0] {
+	case "--help", "-h":
+		fmt.Println(usage)
+		return nil
+	case "--version", "-v":
+		fmt.Println(version)
+		return nil
+	}
+	if len(args) > 1 {
+		return fmt.Errorf("invalid arguments\n%s", usage)
 	}
 	repo := args[0]
 	if !strings.Contains(repo, "/") {
-		return fmt.Errorf("invalid repo format %q, expected owner/repo", repo)
+		return fmt.Errorf("invalid repo format %q, expected owner/repo\n%s", repo, usage)
 	}
 
 	if err := checkGHAvailable(); err != nil {
