@@ -24,4 +24,4 @@ ghclone --help
 ghclone --version
 ```
 
-`--version` prints the release tag for release builds, and `dev-build` for local builds.
+
