@@ -62,12 +62,24 @@ func cloneRepo(repo string) (string, error) {
 	return cloneDir, nil
 }
 
+// User represents a GitHub user API response.
+type User struct {
+	Login string `json:"login"`
+}
+
 func getGHUser() (string, error) {
-	out, err := exec.Command("gh", "api", "user", "--jq", ".login").Output()
+	out, err := exec.Command("gh", "api", "user").Output()
 	if err != nil {
 		return "", fmt.Errorf("failed to get GitHub user: %w", err)
 	}
-	return strings.TrimSpace(string(out)), nil
+	var u User
+	if err := json.Unmarshal(out, &u); err != nil {
+		return "", fmt.Errorf("failed to parse user response: %w", err)
+	}
+	if u.Login == "" {
+		return "", fmt.Errorf("GitHub user login not found in response")
+	}
+	return u.Login, nil
 }
 
 // Email represents a GitHub user email entry.

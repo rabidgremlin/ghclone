@@ -87,6 +87,37 @@ func TestGetGHEmailParsingFallsBackToFirstEmail(t *testing.T) {
 	}
 }
 
+func TestGetGHUserParsing(t *testing.T) {
+	u := User{Login: "octocat"}
+	data, err := json.Marshal(u)
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	var parsed User
+	if err := json.Unmarshal(data, &parsed); err != nil {
+		t.Fatalf("unmarshal failed: %v", err)
+	}
+	if parsed.Login != "octocat" {
+		t.Errorf("expected login %q, got %q", "octocat", parsed.Login)
+	}
+}
+
+func TestGetGHUserParsingEmptyLogin(t *testing.T) {
+	data, err := json.Marshal(User{})
+	if err != nil {
+		t.Fatalf("marshal failed: %v", err)
+	}
+
+	var u User
+	if err := json.Unmarshal(data, &u); err != nil {
+		t.Fatalf("unmarshal failed: %v", err)
+	}
+	if u.Login != "" {
+		t.Errorf("expected empty login, got %q", u.Login)
+	}
+}
+
 func TestCloneRepoInvalidFormat(t *testing.T) {
 	_, err := cloneRepo("noslash")
 	if err == nil {
